@@ -29,9 +29,9 @@ public class Main {
             clientSocket = serverSocket.accept();
             DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String input = reader.readLine();
             KafkaResponse response = new KafkaResponse(7, 25);
-            writer.write(response.toByteArray());
+            byte[] responseBuf = response.toByteArray();
+            writer.write(responseBuf);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         } finally {
