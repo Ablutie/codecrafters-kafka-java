@@ -45,7 +45,7 @@ public class KafkaResponse {
         byteArr[0] = (byte) ((intNumber >> 24) & 0xff);
         byteArr[1] = (byte) ((intNumber >> 16) & 0xff);
         byteArr[2] = (byte) ((intNumber >> 8) & 0xff);
-        byteArr[3] = (byte) ((intNumber >> 24) & 0xff);
+        byteArr[3] = (byte) (intNumber & 0xff);
         return byteArr;
     }
 }
