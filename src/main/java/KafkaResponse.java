@@ -35,7 +35,7 @@ public class KafkaResponse {
         System.arraycopy(messageSizeBytes, 0, response, 0, 4);
 
         byte[] correlationIdBytes = intToByteArray(getCorrelationId());
-        System.arraycopy(correlationIdBytes, 0, response, 3, 4);
+        System.arraycopy(correlationIdBytes, 0, response, 4, 4);
 
         return response;
     }
