@@ -1,11 +1,6 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -27,10 +22,14 @@ public class Main {
             serverSocket.setReuseAddress(true);
             // Wait for connection from client.
             clientSocket = serverSocket.accept();
+
             DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            KafkaResponse response = new KafkaResponse(7, 25);
-            byte[] responseBuf = response.toByteArray();
+            DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
+            byte[] inputBytes = readInput(reader);
+
+            KafkaRequest request = new KafkaRequest(inputBytes);
+            KafkaResponse response = new KafkaResponse(38, request.getCorrelationId());
+            byte[] responseBuf = response.getMessageBytes();
             writer.write(responseBuf);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
@@ -42,6 +41,23 @@ public class Main {
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
             }
+        }
+    }
+
+    private static byte[] readInput(DataInputStream inputStream) {
+        try {
+            int messageSize = inputStream.readInt();
+
+            byte[] result = new byte[messageSize];
+            byte[] messageSizeAsBytes = ParsingUtils.intToByteArray(messageSize);
+
+            System.arraycopy(messageSizeAsBytes, 0, result, 0, 4);
+            inputStream.readFully(result, 4, messageSize - 4);
+
+            return result;
+        } catch (IOException e) {
+            System.out.println("Could not read request from network: " + e.getMessage());
+            return new byte[0];
         }
     }
 }
