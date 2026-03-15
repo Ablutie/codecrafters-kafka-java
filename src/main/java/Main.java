@@ -27,8 +27,11 @@ public class Main {
             DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
             byte[] inputBytes = readInput(reader);
 
+            KafkaApi kafkaApi = new KafkaApi();
             KafkaRequest request = new KafkaRequest(inputBytes);
-            KafkaResponse response = new KafkaResponse(38, request.getCorrelationId());
+            int apiVersionResponse = kafkaApi.supportsVersion(request.getRequestApiVersion());
+            KafkaResponse response = new KafkaResponse(38, request.getCorrelationId(),
+                    ParsingUtils.int16ToByteArray(apiVersionResponse));
             byte[] responseBuf = response.getMessageBytes();
             writer.write(responseBuf);
         } catch (IOException e) {
@@ -49,7 +52,7 @@ public class Main {
             int messageSize = inputStream.readInt();
 
             byte[] result = new byte[messageSize];
-            byte[] messageSizeAsBytes = ParsingUtils.intToByteArray(messageSize);
+            byte[] messageSizeAsBytes = ParsingUtils.int32ToByteArray(messageSize);
 
             System.arraycopy(messageSizeAsBytes, 0, result, 0, 4);
             inputStream.readFully(result, 4, messageSize - 4);

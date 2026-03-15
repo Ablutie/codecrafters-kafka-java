@@ -17,11 +17,24 @@ public class KafkaRequest {
         return correlationId;
     }
 
+    public int getRequestApiVersion() {
+
+        return requestApiVersion;
+    }
+
     private void readFieldsFromByteArray() {
 
-        this.messageSize = 15;
-        this.requestApiKey = 18;
-        this.requestApiVersion = 4;
+        byte[] messageSizeBytes = new byte[4];
+        System.arraycopy(messageBytes, 0, messageSizeBytes, 0, 4);
+        this.messageSize = ParsingUtils.fromInt32(messageSizeBytes);
+
+        byte[] requestApiKeyBytes = new byte[2];
+        System.arraycopy(messageBytes, 4, requestApiKeyBytes, 0, 2);
+        this.requestApiKey = ParsingUtils.fromInt16(requestApiKeyBytes);
+
+        byte[] requestApiVersionBytes = new byte[2];
+        System.arraycopy(messageBytes, 6, requestApiVersionBytes, 0, 2);
+        this.requestApiVersion = ParsingUtils.fromInt16(requestApiVersionBytes);
 
         byte[] correlationIdBytes = new byte[4];
         System.arraycopy(messageBytes, 8, correlationIdBytes, 0, 4);
