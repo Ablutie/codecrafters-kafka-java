@@ -29,10 +29,8 @@ public class Main {
 
             KafkaApi kafkaApi = new KafkaApi();
             KafkaRequest request = new KafkaRequest(inputBytes);
-            int apiVersionResponse = kafkaApi.supportsVersion(request.getRequestApiVersion());
-            KafkaResponse response = new KafkaResponse(38, request.getCorrelationId(),
-                    ParsingUtils.int16ToByteArray(apiVersionResponse));
-            byte[] responseBuf = response.getMessageBytes();
+            KafkaResponse response = kafkaApi.supportsVersion(request);
+            byte[] responseBuf = response.toBytes();
             writer.write(responseBuf);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());

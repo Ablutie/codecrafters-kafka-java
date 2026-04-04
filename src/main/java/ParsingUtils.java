@@ -8,6 +8,10 @@ public class ParsingUtils {
         return intToByteArray(intNumber, 2);
     }
 
+    public static byte[] int8ToByteArray(int intNumber) {
+        return intToByteArray(intNumber, 1);
+    }
+
     private static byte[] intToByteArray(int intNumber, int arraySize) {
         byte[] byteArr = new byte[arraySize];
         for (int i = 0; i < arraySize; i++) {

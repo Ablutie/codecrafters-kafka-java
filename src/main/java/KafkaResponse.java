@@ -1,20 +1,11 @@
 public class KafkaResponse {
     private final int correlationId;
-    private final int messageSize;
     private final byte[] body;
-    private final byte[] messageBytes;
 
-    public byte[] getMessageBytes() {
+    public KafkaResponse(int correlationId, byte[] body) {
 
-        return messageBytes;
-    }
-
-    public KafkaResponse(int messageSize, int correlationId, byte[] body) {
-
-        this.messageSize = messageSize;
         this.correlationId = correlationId;
         this.body = body;
-        this.messageBytes = toBytes();
     }
 
     public int getCorrelationId() {
@@ -22,20 +13,20 @@ public class KafkaResponse {
         return correlationId;
     }
 
-    public int getMessageSize() {
+    public int computeMessageSize() {
 
-        return messageSize;
+        return 4 + body.length;
     }
 
     public byte[] getBody() {
         return body;
     }
 
-    private byte[] toBytes() {
+    public byte[] toBytes() {
         byte[] body = getBody();
         byte[] response = new byte[8 + body.length];
 
-        byte[] messageSizeBytes = ParsingUtils.int32ToByteArray(getMessageSize());
+        byte[] messageSizeBytes = ParsingUtils.int32ToByteArray(computeMessageSize());
         System.arraycopy(messageSizeBytes, 0, response, 0, 4);
 
         byte[] correlationIdBytes = ParsingUtils.int32ToByteArray(getCorrelationId());
