@@ -32,6 +32,7 @@ public class Main {
             KafkaRequest request = new KafkaRequest(inputBytes);
             KafkaResponse response = kafkaApi.supportsVersion(request);
             byte[] responseBuf = response.toBytes();
+            System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
             writer.write(responseBuf);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
