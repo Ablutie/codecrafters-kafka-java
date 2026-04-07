@@ -26,6 +26,7 @@ public class Main {
             DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
             DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
             byte[] inputBytes = readInput(reader);
+            System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
 
             KafkaApi kafkaApi = new KafkaApi();
             KafkaRequest request = new KafkaRequest(inputBytes);

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class ParsingUtils {
 
     public static byte[] int32ToByteArray(int intNumber) {
@@ -31,17 +34,21 @@ public class ParsingUtils {
     }
 
     public static int fromInt32(byte[] intBytes) {
-//        int result = Byte.toUnsignedInt(intBytes[0]);
-//
-//        for (int i = 1; i <= 3; i++) {
-//            result = ((result << 8) + Byte.toUnsignedInt(intBytes[i]));
-//        }
-//
-//        return result;
         return intFromBytes(intBytes, 4);
     }
 
     public static int fromInt16(byte[] intBytes) {
         return intFromBytes(intBytes, 2);
+    }
+
+    public static List<String> byteArrayToHex(byte[] arr) {
+        List<String> hexList = new ArrayList<>();
+        for (byte currentByte : arr) {
+            char[] hexDigits = new char[2];
+            hexDigits[0] = Character.forDigit((currentByte >> 4) & 0xf, 16);
+            hexDigits[1] = Character.forDigit(currentByte & 0xf, 16);
+            hexList.add(new String(hexDigits));
+        }
+        return hexList;
     }
 }
