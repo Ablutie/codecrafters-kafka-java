@@ -12,17 +12,18 @@ public class Main {
 
         // TODO: Uncomment the code below to pass the first stage
         //
-        ServerSocket serverSocket = null;
+//        ServerSocket serverSocket = null;
         Socket clientSocket = null;
         int port = 9092;
-        try {
-            serverSocket = new ServerSocket(port);
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+//            serverSocket = new ServerSocket(port);
             // Since the tester restarts your program quite often, setting SO_REUSEADDR
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
             while(true) {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
+                System.out.println("Accepted new connection: " + clientSocket.toString());
 
                 DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
                 DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
@@ -34,22 +35,23 @@ public class Main {
 
                 KafkaResponse response = kafkaApi.supportsVersion(request);
                 byte[] responseBuf = response.toBytes();
-                
+
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                 writer.write(responseBuf);
-                writer.close();
+//                writer.close();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
-        } finally {
-            try {
-                if (clientSocket != null) {
-                    clientSocket.close();
-                }
-            } catch (IOException e) {
-                System.out.println("IOException: " + e.getMessage());
-            }
         }
+//        finally {
+//            try {
+//                if (clientSocket != null) {
+//                    clientSocket.close();
+//                }
+//            } catch (IOException e) {
+//                System.out.println("IOException: " + e.getMessage());
+//            }
+//        }
     }
 
     private static byte[] readInput(DataInputStream inputStream) {
