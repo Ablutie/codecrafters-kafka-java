@@ -35,6 +35,7 @@ public class Main {
                 byte[] responseBuf = response.toBytes();
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                 writer.write(responseBuf);
+                break;
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
