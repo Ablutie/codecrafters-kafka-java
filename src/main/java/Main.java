@@ -38,8 +38,6 @@ public class Main {
 
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                 writer.write(responseBuf);
-//                writer.close();
-//                reader.close();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
