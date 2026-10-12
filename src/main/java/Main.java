@@ -21,23 +21,27 @@ public class Main {
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
             // Wait for connection from client.
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("Accepted new connection: " + clientSocket.toString());
             while(true) {
+
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Accepted new connection: " + clientSocket.toString());
 
                 DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
                 DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
-                byte[] inputBytes = readInput(reader);
-                System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
+                while(true) {
+                    byte[] inputBytes = readInput(reader);
+                    System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
 
-                KafkaApi kafkaApi = new KafkaApi();
-                KafkaRequest request = new KafkaRequest(inputBytes);
+                    KafkaApi kafkaApi = new KafkaApi();
+                    KafkaRequest request = new KafkaRequest(inputBytes);
 
-                KafkaResponse response = kafkaApi.supportsVersion(request);
-                byte[] responseBuf = response.toBytes();
+                    KafkaResponse response = kafkaApi.supportsVersion(request);
+                    byte[] responseBuf = response.toBytes();
 
-                System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
-                writer.write(responseBuf);
+                    System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
+                    writer.write(responseBuf);
+                    writer.flush();
+                }
 //                reader.close();
 //                writer.close();
             }
