@@ -20,20 +20,22 @@ public class Main {
             // Since the tester restarts your program quite often, setting SO_REUSEADDR
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
-            // Wait for connection from client.
-            clientSocket = serverSocket.accept();
+            while(true) {
+                // Wait for connection from client.
+                clientSocket = serverSocket.accept();
 
-            DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
-            DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
-            byte[] inputBytes = readInput(reader);
-            System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
+                DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
+                DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
+                byte[] inputBytes = readInput(reader);
+                System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
 
-            KafkaApi kafkaApi = new KafkaApi();
-            KafkaRequest request = new KafkaRequest(inputBytes);
-            KafkaResponse response = kafkaApi.supportsVersion(request);
-            byte[] responseBuf = response.toBytes();
-            System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
-            writer.write(responseBuf);
+                KafkaApi kafkaApi = new KafkaApi();
+                KafkaRequest request = new KafkaRequest(inputBytes);
+                KafkaResponse response = kafkaApi.supportsVersion(request);
+                byte[] responseBuf = response.toBytes();
+                System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
+                writer.write(responseBuf);
+            }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         } finally {
