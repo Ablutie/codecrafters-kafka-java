@@ -31,11 +31,13 @@ public class Main {
 
                 KafkaApi kafkaApi = new KafkaApi();
                 KafkaRequest request = new KafkaRequest(inputBytes);
+
                 KafkaResponse response = kafkaApi.supportsVersion(request);
                 byte[] responseBuf = response.toBytes();
+                
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                 writer.write(responseBuf);
-                break;
+                writer.close();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
