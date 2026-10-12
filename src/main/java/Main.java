@@ -13,7 +13,7 @@ public class Main {
         // TODO: Uncomment the code below to pass the first stage
         //
 //        ServerSocket serverSocket = null;
-        Socket clientSocket = null;
+//        Socket clientSocket = null;
         int port = 9092;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 //            serverSocket = new ServerSocket(port);
@@ -22,7 +22,7 @@ public class Main {
             serverSocket.setReuseAddress(true);
             while(true) {
                 // Wait for connection from client.
-                clientSocket = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept();
                 System.out.println("Accepted new connection: " + clientSocket.toString());
 
                 DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
@@ -39,7 +39,7 @@ public class Main {
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                 writer.write(responseBuf);
 //                writer.close();
-                reader.close();
+//                reader.close();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
