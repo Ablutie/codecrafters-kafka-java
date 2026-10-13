@@ -22,33 +22,14 @@ public class Main {
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
 
-            clientSocket = serverSocket.accept();
-            System.out.println("Accepted new connection: " + clientSocket.toString());
-            // Wait for connection from client.
-            try (DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
-                DataInputStream reader = new DataInputStream(clientSocket.getInputStream())) {
+            while (true) {
+                clientSocket = serverSocket.accept();
+                System.out.println("Accepted new connection: " + clientSocket.toString());
 
-                while(true) {
-                    byte[] inputBytes = readInput(reader);
-                    System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
-
-                    KafkaApi kafkaApi = new KafkaApi();
-                    KafkaRequest request = new KafkaRequest(inputBytes);
-
-                    KafkaResponse response = kafkaApi.supportsVersion(request);
-                    byte[] responseBuf = response.toBytes();
-
-                    System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
-                    writer.write(responseBuf);
-                    writer.flush();
-//                reader.close();
-//                writer.close();
-                }
-            } catch (EOFException eof) {
-                System.err.println("Client closed connection: " + eof.getMessage());
-            } catch (IOException ioe) {
-                System.err.println("IOException: " + ioe.getMessage());
+                Runnable requestHandler = new KafkaRequestHandler(clientSocket);
+                new Thread(requestHandler).start();
             }
+            // Wait for connection from client.
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         } finally {
