@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,22 +13,21 @@ public class Main {
 
         // TODO: Uncomment the code below to pass the first stage
         //
-//        ServerSocket serverSocket = null;
-//        Socket clientSocket = null;
+        ServerSocket serverSocket = null;
+        Socket clientSocket = null;
         int port = 9092;
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-//            serverSocket = new ServerSocket(port);
+        try {
+            serverSocket = new ServerSocket(port);
             // Since the tester restarts your program quite often, setting SO_REUSEADDR
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
+
+            clientSocket = serverSocket.accept();
+            System.out.println("Accepted new connection: " + clientSocket.toString());
             // Wait for connection from client.
-            while(true) {
+            try (DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
+                DataInputStream reader = new DataInputStream(clientSocket.getInputStream())) {
 
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Accepted new connection: " + clientSocket.toString());
-
-                DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
-                DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
                 while(true) {
                     byte[] inputBytes = readInput(reader);
                     System.out.println("Input request: " + ParsingUtils.byteArrayToHex(inputBytes));
@@ -41,38 +41,36 @@ public class Main {
                     System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
                     writer.write(responseBuf);
                     writer.flush();
-                }
 //                reader.close();
 //                writer.close();
+                }
+            } catch (EOFException eof) {
+                System.err.println("Client closed connection: " + eof.getMessage());
+            } catch (IOException ioe) {
+                System.err.println("IOException: " + ioe.getMessage());
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
+        } finally {
+            try {
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
+            } catch (IOException e) {
+                System.out.println("IOException: " + e.getMessage());
+            }
         }
-//        finally {
-//            try {
-//                if (clientSocket != null) {
-//                    clientSocket.close();
-//                }
-//            } catch (IOException e) {
-//                System.out.println("IOException: " + e.getMessage());
-//            }
-//        }
     }
 
-    private static byte[] readInput(DataInputStream inputStream) {
-        try {
-            int messageSize = inputStream.readInt();
+    private static byte[] readInput(DataInputStream inputStream) throws IOException {
+        int messageSize = inputStream.readInt();
 
-            byte[] result = new byte[messageSize];
-            byte[] messageSizeAsBytes = ParsingUtils.int32ToByteArray(messageSize);
+        byte[] result = new byte[messageSize + 4];
+        byte[] messageSizeAsBytes = ParsingUtils.int32ToByteArray(messageSize);
 
-            System.arraycopy(messageSizeAsBytes, 0, result, 0, 4);
-            inputStream.readFully(result, 4, messageSize - 4);
+        System.arraycopy(messageSizeAsBytes, 0, result, 0, 4);
+        inputStream.readFully(result, 4, messageSize);
 
-            return result;
-        } catch (IOException e) {
-            System.out.println("Could not read request from network: " + e.getMessage());
-            return new byte[0];
-        }
+        return result;
     }
 }
