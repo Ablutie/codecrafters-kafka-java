@@ -13,8 +13,8 @@ public record ApiVersionsResponse(
         // errorCode defaulted to 0, so [00 00]
         int currentIndex = 2;
 
-        // hardcode array length to 2 - expected in the tester for some reason
-        responseBytes[currentIndex] = (byte) 2;
+        // array length + 1 - some compact encoding expected in the tester
+        responseBytes[currentIndex] = (byte) (api_keys_array_length + 1);
         currentIndex++;
         
         int arrayIndex = 0;
