@@ -9,7 +9,7 @@ public class KafkaApi {
                     new ErrorResponse(ErrorCode.UNSUPPORTED_VERSION.code).toBytes());
         }
 
-        ApiVersionsResponse versionResponse = new ApiVersionsResponse(1,
+        ApiVersionsResponse versionResponse = new ApiVersionsResponse(
                 List.of(new ApiKey(18, 0, 4, 0),
                         new ApiKey(75, 0, 0, 0)),
                         0,

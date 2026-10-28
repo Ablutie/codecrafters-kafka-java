@@ -1,7 +1,6 @@
 import java.util.List;
 
 public record ApiVersionsResponse(
-        int api_keys_array_length,
         List<ApiKey> api_keys,
         int throttle_time_ms,
         int tag_buffer
@@ -14,7 +13,7 @@ public record ApiVersionsResponse(
         int currentIndex = 2;
 
         // array length + 1 - some compact encoding expected in the tester
-        responseBytes[currentIndex] = (byte) (api_keys_array_length + 1);
+        responseBytes[currentIndex] = (byte) (api_keys.size() + 1);
         currentIndex++;
         
         int arrayIndex = 0;
