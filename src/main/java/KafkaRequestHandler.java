@@ -23,7 +23,7 @@ public class KafkaRequestHandler implements Runnable {
                 KafkaApi kafkaApi = new KafkaApi();
                 KafkaRequest request = new KafkaRequest(inputBytes);
 
-                KafkaResponse response = kafkaApi.supportsVersion(request);
+                KafkaResponse response = kafkaApi.versionResponse(request);
                 byte[] responseBuf = response.toBytes();
 
                 System.out.println("Output: " + ParsingUtils.byteArrayToHex(responseBuf));
